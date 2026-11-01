@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1528">
-<meta name="description" content="全国24場の出走選手データ・展示・直前の3連単オッズスナップショット・結果を自動照合する非公式参考分析アプリ">
+<meta name="description" content="全国24場の選手・機力と3連単オッズを組み合わせ別に比較し、選択場付近の天気を確認できる非公式参考分析アプリ">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="全国BOAT LAB">
@@ -29,6 +29,8 @@
 @media(max-width:420px){.venue-picker{align-items:stretch;flex-direction:column}.venue-picker select{max-width:none;width:100%}.national-card,.odds-row{padding:10px}}
 
 .optional-entry{margin:12px 0 14px;padding:10px 12px;border:1px solid var(--border);border-radius:10px}.optional-entry summary{cursor:pointer;color:var(--muted);font-size:12px;font-weight:700}.optional-entry[open] summary{margin-bottom:10px}
+.national-card .candidate-top{display:block;color:#c7edfa;font-weight:800;margin-top:7px}.national-card .candidate-alt{display:block;color:#ffdda7;font-weight:750;margin-top:8px}.national-card .candidate-price{font-weight:850;white-space:nowrap;color:#74ebd5}.national-card .candidate-foot{color:#9cb1c6}.odds-best{border-color:#5b908b;background:#153334}.odds-best .pick-number{font-size:18px}
+@media(max-width:600px){.national-card{grid-template-columns:1fr;gap:8px}.national-card .subinfo{border-top:1px solid #35516a;padding-top:7px;display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap}.national-card .subinfo .candidate-alt{margin-top:0}.national-card .candidate-foot{margin-top:0}}
 </style>
 <title>BOAT RACE LAB | 全国24場の参考分析</title>
 </head>
@@ -60,7 +62,7 @@
 </section>
 <section class="section nationwide" aria-label="全国横断 注目レース">
  <div class="section-heading"><h2>全国の注目レース <span class="auto-small">参考</span></h2><span class="micro" id="nationCount">0件</span></div>
- <p class="section-desc">開催中のレースを横断して、相対指数と取得済み3連単オッズを比較。オッズは原則締切約5分前の集計中スナップショットで、取得できないレースは「未取得」。モデル順位は的中確率・期待値を保証しません。</p>
+ <p class="section-desc">全国の出走表を横断して参考指数を比較。モデル第1候補と、オッズ条件に合う別候補は区別して表示します。オッズは配信済みの集計中スナップショットであり、締切・発売可否は公式で確認してください。参考指数は的中率ではありません。</p>
  <div id="nationList" class="national-list"><p class="section-desc">出走データ取得後に表示します。</p></div>
 </section>
 <section id="view-home">
@@ -81,10 +83,10 @@
 <div class="odds-filter"><label for="minOdds">最低オッズ</label><select id="minOdds"><option value="1">指定なし</option><option value="10">10倍以上</option><option value="20" selected>20倍以上</option><option value="50">50倍以上</option><option value="100">100倍以上</option></select><a id="officialOdds" target="_blank" rel="noopener noreferrer">公式3連単オッズを確認 ↗</a></div>
 <p id="oddsFeedback" role="status" class="feedback"></p><div id="oddsPicks" class="odds-list"></div>
 <p class="disclaimer">出典：<a href="https://boatracecsv.github.io/docs/data/previews.html" target="_blank" rel="noopener noreferrer">BoatraceCSV / od3</a>（非公式）。オッズは締切約5分前の集計中値を1回記録したもの。発売・中止・返還・直前変動は必ず公式サイトで確認。モデル順位は確率・期待値・回収率の保証ではありません。</p></div>
-<div class="section" id="weatherSection"><div class="section-heading"><h2>住之江周辺の気象</h2><button class="text-button" id="refreshWeather" type="button">更新 ↻</button></div>
-  <div class="weather-head"><div><span class="micro">気象モデル / 競走水面の実測値ではありません</span><div id="weatherSummary" class="weather-title">取得前</div><div id="weatherWhen" class="micro">選択した開催日の17時前後の予報を確認</div></div><div class="weather-symbol" id="weatherIcon">☁</div></div>
+<div class="section" id="weatherSection"><div class="section-heading"><h2 id="weatherTitle">選択場周辺の気象予報</h2><button class="text-button" id="refreshWeather" type="button">更新 ↻</button></div>
+  <div class="weather-head"><div><span class="micro">気象モデル / 競走水面の実測値ではありません</span><div id="weatherSummary" class="weather-title">取得前</div><div id="weatherWhen" class="micro">選択したレースの締切時刻付近（不明なときは15時）の参考予報を確認</div></div><div class="weather-symbol" id="weatherIcon">☁</div></div>
   <div class="weather-metrics"><div><span>気温</span><b id="weatherTemp">--</b></div><div><span>風速</span><b id="weatherWind">--</b></div><div><span>風向</span><b id="weatherDir">--</b></div><div><span>降水</span><b id="weatherRain">--</b></div></div>
-  <p class="disclaimer" id="weatherNotice">風向・風速は水面の実測とは異なります。風の予報値は順位計算に使用していません。</p>
+  <p class="disclaimer" id="weatherNotice">会場付近の概算地点の予報で、水面の実測値ではありません。予想順位計算には使用していません。</p>
   <div class="source-credit">気象データ: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> (CC BY 4.0)</div>
 </div>
 <div class="section"><div class="section-heading"><h2>公式情報を確認</h2></div><div class="link-list"><a id="officialSecondLink" target="_blank" rel="noopener noreferrer">出走表・モーター成績 <span>↗</span></a><a id="officialExhibition" target="_blank" rel="noopener noreferrer">直前情報・展示 <span>↗</span></a><a id="officialVenueLink" href="https://www.boatrace.jp/" target="_blank" rel="noopener noreferrer">ボートレース公式サイト <span>↗</span></a></div></div>
@@ -118,6 +120,33 @@ const ODDS_AUTO_STORE='boatrace-race-lab-od3-snapshots-v1';
 const ODDS_CSV_BASE='https://boatracecsv.github.io/data/previews/od3/';
 const VENUES=['桐生','戸田','江戸川','平和島','多摩川','浜名湖','蒲郡','常滑','津','三国','びわこ','住之江','尼崎','鳴門','丸亀','児島','宮島','徳山','下関','若松','芦屋','福岡','唐津','大村'];
 const venueName=v=>VENUES[Number(v)-1]||'不明';
+const VENUE_WEATHER_COORDS = [null,
+ [36.377,139.291],
+ [35.807,139.65],
+ [35.692,139.879],
+ [35.587,139.737],
+ [35.673,139.523],
+ [34.718,137.6],
+ [34.805,137.232],
+ [34.88,136.843],
+ [34.717,136.515],
+ [36.211,136.153],
+ [35.018,135.868],
+ [34.612,135.471],
+ [34.718,135.418],
+ [34.192,134.608],
+ [34.284,133.792],
+ [34.473,133.8],
+ [34.302,132.313],
+ [34.011,131.802],
+ [33.952,130.921],
+ [33.881,130.778],
+ [33.896,130.649],
+ [33.595,130.397],
+ [33.451,129.981],
+ [32.898,129.954]
+]; // 24場付近の概算予報参照点。レース水面の実測座標ではありません。
+
 const AUTO_BASE='https://boatraceopenapi.github.io/api/v1/';
 const AUTO_INTERVAL_MS=5*60*1000;
 let autoCache=loadAutoCache(),autoAttempts=Object.create(null),autoRunning=Object.create(null),autoError=Object.create(null);
@@ -287,7 +316,7 @@ function updateMeta(){
  $('dataBadge').textContent=!d?'未登録':complete(d.players)?'事前データあり':'入力途中';$('dataBadge').classList.toggle('neutral',!d||!complete(d.players));
  $('sourceMsg').textContent=d?.source||'公式出走表を確認して登録';
  for(const id of ['officialLink','officialSecondLink'])$(id).href=officialURL();$('officialExhibition').href=officialURL('beforeinfo');$('officialOdds').href=officialURL('odds3t');$('officialVenueLink').href='https://www.boatrace.jp/';
- $('weatherSection').hidden=venue!==12;$('resultInput').value=resultsForCurrent()?.actual||'';
+ $('weatherSection').hidden=false;$('resultInput').value=resultsForCurrent()?.actual||'';
 }
 function parseKey(k){const p=k.split('_');return p.length===3?{d:p[0],v:Number(p[1]),n:Number(p[2])}:p.length===2?{d:p[0],v:12,n:Number(p[1])}:null}
 function dataForKey(k){const p=parseKey(k);return p?dataFor(p.d,p.n,p.v):null}
@@ -328,7 +357,7 @@ function clearRace(){if(!confirm(`${venueName(venue)} ${labelDate(date)} ${race}
 function renderResults(){const auto=cachedRace();$('autoResultStatus').textContent=auto?.triple?`【自動取得】${venueName(venue)} ${labelDate(date)} ${race}R：確定3連単 ${auto.triple}（非公式API。公式結果と照合してください）`:'確定3連単：未取得／開催前・結果未掲載の可能性があります。';const entries=Object.entries(state.results).sort((a,b)=>b[0].localeCompare(a[0]));let hits=entries.filter(([,v])=>v.tickets?.[0]===v.actual).length;$('resultsTotal').textContent=entries.length;$('resultsHits').textContent=hits;$('resultsRate').textContent=entries.length?`${(hits/entries.length*100).toFixed(1)}%`:'--';$('resultInput').value=resultsForCurrent()?.actual||'';
 $('resultHistory').innerHTML=entries.length?entries.map(([k,v])=>{const parsed=parseKey(k)||{d:'?',v:12,n:'?'};const {d,n,v:station}=parsed;let hit=v.tickets?.[0]===v.actual;return `<div class="history-item"><div><b>${escapeHTML(d)} · ${escapeHTML(venueName(station))} ${escapeHTML(n)}R</b><small>確定 ${escapeHTML(v.actual)}　/　第1候補 ${escapeHTML(v.tickets?.[0]||'--')}</small></div><span class="history-mark ${hit?'':'miss'}">${hit?'第1候補一致':'第1候補不一致'}</span></div>`}).join(''):'<p class="section-desc">まだ結果の記録はありません。</p>'}
 function saveResult(){const s=$('resultInput').value.trim().replace(/\s/g,'');const m=s.match(/^([1-6])-([1-6])-([1-6])$/);if(!m||new Set(m.slice(1)).size!==3){$('resultFeedback').textContent='⚠ 1-2-3 の形式で、異なる3艇を入力してください';return}const d=dataFor();if(!d||!complete(d.players)){$('resultFeedback').textContent='⚠ 先に6艇の出走データを登録してください';return}const model=rankModel(d.players);state.results[raceKey()]={actual:s,tickets:model.combos.slice(0,3).map(x=>x.lanes.join('-')),recorded:new Date().toISOString()};if(!persist()){$('resultFeedback').textContent='⚠ 保存に失敗しました';return}renderAll();$('resultFeedback').textContent='記録しました（公式結果との照合は利用者が実施）'}
-function renderAll(){updateMeta();renderRaceGrid();renderHome();renderNation();renderOdds();if(activeView==='editor')renderEditor();if(activeView==='results')renderResults();showAutoPanel();if(venue===12)loadWeather();fetchAutoData();fetchAutoOdds()}
+function renderAll(){updateMeta();renderRaceGrid();renderHome();renderNation();renderOdds();if(activeView==='editor')renderEditor();if(activeView==='results')renderResults();showAutoPanel();loadWeather();fetchAutoData();fetchAutoOdds()}
 
 function validCombo(x){const m=String(x).trim().match(/^([1-6])-([1-6])-([1-6])$/);return m&&new Set(m.slice(1)).size===3?m[0]:null}
 function addOddsEntry(){const combo=validCombo($('oddsCombo').value),mult=Number($('oddsMultiplier').value);if(!combo||!Number.isFinite(mult)||mult<1||mult>99999){$('oddsFeedback').textContent='⚠ 異なる3艇の組み合わせと、1〜99999の倍率を入力してください';return}
@@ -342,43 +371,106 @@ function renderOdds(){const target=$('oddsPicks'),d=dataFor(),model=d?.players&&
  if(!model){target.innerHTML='<p class="section-desc">倍率は取得できましたが、選手データが揃っていないためモデルとの比較はまだできません。</p>';return}
  const matching=Object.entries(rows).map(([combo,val])=>{const r=model.combos.findIndex(x=>x.lanes.join('-')===combo);return{combo,rank:r+1,odds:Number(val.odds),source:val.source,time:val.time}}).filter(x=>Number.isFinite(x.odds)&&x.odds>=min&&x.rank>0&&x.rank<=20).sort((a,b)=>a.rank-b.rank||b.odds-a.odds).slice(0,20);
  const stamp=x=>{const t=Date.parse(x.time);return Number.isFinite(t)?new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(t))+' JST':'記録時刻不明'};
- const html=matching.map(x=>`<div class="odds-row"><div><b>${escapeHTML(x.combo)}</b><small>モデル順位 ${x.rank}/120 · ${x.source==='auto'?'集計中・自動取得':'手入力'} ${escapeHTML(stamp(x))}</small></div><div class="subinfo"><span class="pick-number">${x.odds.toFixed(1)}倍</span></div></div>`).join('');
+ const html=matching.filter(x=>x.rank!==1).map(x=>`<div class="odds-row"><div><b>${escapeHTML(x.combo)}</b><small>モデル順位 ${x.rank}/120 · ${x.source==='auto'?'集計中・自動取得':'手入力'} ${escapeHTML(stamp(x))}</small></div><div class="subinfo"><span class="pick-number">${x.odds.toFixed(1)}倍</span></div></div>`).join('');
  const manual=Object.entries(storedOdds[raceKey()]||{}).map(([combo,x])=>`<div class="odds-row"><div><b>${escapeHTML(combo)}</b><small>手入力（任意）</small></div><div class="subinfo">${Number(x.odds).toFixed(1)}倍 <button type="button" data-odds-delete="${escapeHTML(combo)}">削除</button></div></div>`).join('');
  const count=Object.keys(rows).length,auto=autoOddsFor();
- target.innerHTML='<p class="section-desc"><b>モデル上位20通り × 指定した最低倍率</b>（当たりやすさや期待値の証明ではありません）</p>'+(matching.length?html:'<p class="section-desc">この条件のモデル上位候補はありません。</p>')+`<p class="section-desc">オッズ確認可能 ${count}通り（自動 ${auto?Object.keys(auto.odds).length:0}通り）。${manual?'下は手入力の管理です。':''}</p>`+manual;
+
+const best=model.combos[0].lanes.join('-'),bestRow=rows[best]||null;
+const bestText=bestRow?`${Number(bestRow.odds).toFixed(1)}倍`:'未取得';
+const bestBlock=`<div class="odds-row odds-best"><div><b>モデル第1候補：${best}</b><small>同じ3連単の取得オッズ（最低倍率フィルターの対象外）</small></div><div class="subinfo"><span class="candidate-price">${bestText}</span></div></div>`;
+target.innerHTML='<p class="section-desc"><b>モデル第1候補と、最低オッズ条件に合う別候補</b>を分けて表示。順位は的中確率・期待値の証明ではありません。</p>'+bestBlock+
+  (html?html:'<p class="section-desc">最低オッズ条件に合うモデル第2～20候補はありません。</p>')+
+  `<p class="section-desc">オッズ確認可能 ${count}通り（自動 ${auto?Object.keys(auto.odds).length:0}通り）。${manual?'下は手入力の管理です。':''}</p>`+manual;
  target.querySelectorAll('[data-odds-delete]').forEach(b=>b.onclick=()=>{const k=b.dataset.oddsDelete;delete storedOdds[raceKey()][k];if(!Object.keys(storedOdds[raceKey()]).length)delete storedOdds[raceKey()];saveOdds();renderOdds();renderNation()})}
-function renderNation(){const target=$('nationList');const available=autoCache.days[date]?.venues||{};const combined={};
+
+function renderNation(){
+ const target=$('nationList'),available=autoCache.days[date]?.venues||{},combined={};
  for(const [vs,races] of Object.entries(available))combined[vs]={...races};
- for(const [key,entry] of Object.entries(state.races)){const z=parseKey(key);if(z&&z.d===date){combined[z.v] ||= {};if(!combined[z.v][z.n]||key===raceKey(z.d,z.n,z.v)||(z.v===12&&key===legacyKey(z.d,z.n)))combined[z.v][z.n]=entry}}
- if(venue===12)for(const [key,entry] of Object.entries(SEED)){const z=parseKey(key);if(z&&z.d===date){combined[12] ||= {};if(!combined[12][z.n])combined[12][z.n]=entry}}
- const all=[];
+ for(const [key,entry] of Object.entries(state.races)){
+  const z=parseKey(key);if(z&&z.d===date){combined[z.v] ||= {};if(!combined[z.v][z.n]||key===raceKey(z.d,z.n,z.v)||(z.v===12&&key===legacyKey(z.d,z.n)))combined[z.v][z.n]=entry}
+ }
+ if(venue===12)for(const [key,entry] of Object.entries(SEED)){
+  const z=parseKey(key);if(z&&z.d===date){combined[12] ||= {};if(!combined[12][z.n])combined[12][z.n]=entry}
+ }
+ const all=[],min=Number($('minOdds').value)||1;
  for(const [vs,races] of Object.entries(combined))for(const [ns,entry] of Object.entries(races)){
   const v=Number(vs),n=Number(ns);if(!entry?.players||!complete(entry.players)||entry.triple)continue;
   if(date===inJST()&&entry.closedAt&&Date.parse(entry.closedAt.replace(' ','T')+'+09:00')<Date.now())continue;
-  const mod=rankModel(entry.players);const leader=mod.rank[0],top=mod.combos[0],k=raceKey(date,n,v);
-  const odds=oddsFor(date,v,n),min=Number($('minOdds').value)||1;
-  const good=Object.entries(odds).map(([combo,o])=>{const rank=mod.combos.findIndex(z=>z.lanes.join('-')===combo)+1;return{combo,rank,odds:Number(o.odds),source:o.source}}).filter(z=>z.rank>0&&z.rank<=20&&z.odds>=min).sort((a,b)=>a.rank-b.rank||b.odds-a.odds);
-  all.push({v,n,leader,score:mod.scores[leader],top:top.lanes.join('-'),oddsPick:good[0]||null});
+  const mod=rankModel(entry.players),leader=mod.rank[0],top=mod.combos[0].lanes.join('-');
+  const odds=oddsFor(date,v,n),topOdds=odds[top]||null;
+  const other=Object.entries(odds).map(([combo,o])=>{
+   const idx=mod.combos.findIndex(z=>z.lanes.join('-')===combo);
+   return {combo,rank:idx+1,odds:Number(o.odds),source:o.source};
+  }).filter(z=>z.rank>1&&z.rank<=20&&Number.isFinite(z.odds)&&z.odds>=min)
+   .sort((a,b)=>a.rank-b.rank||b.odds-a.odds);
+  all.push({v,n,leader,score:mod.scores[leader],top,topOdds,alternative:other[0]||null});
  }
- // Give actual input odds primary visibility, then stronger relative index.
- all.sort((a,b)=>Number(!!b.oddsPick)-Number(!!a.oddsPick)||(a.oddsPick&&b.oddsPick?a.oddsPick.rank-b.oddsPick.rank:0)||b.score-a.score);
+ all.sort((a,b)=>Number(!!b.alternative)-Number(!!a.alternative)||
+    (a.alternative&&b.alternative?a.alternative.rank-b.alternative.rank:0)||b.score-a.score);
  $('nationCount').textContent=`${all.length}レース`;
- target.innerHTML=all.length?all.slice(0,12).map(x=>`<button type="button" class="national-card" data-national-v="${x.v}" data-national-n="${x.n}"><span><b>${escapeHTML(venueName(x.v))} ${x.n}R</b><small>中心艇 ${x.leader+1}号艇 · 相対指数 ${x.score.toFixed(1)} / 100</small><small>モデル第1候補 ${x.top}</small></span><span class="subinfo">${x.oddsPick?`<span class="pick-number">${x.oddsPick.odds.toFixed(1)}倍</span><small>${x.oddsPick.combo} · ${x.oddsPick.source==='auto'?'自動取得':'手入力'}</small>`:'<small>オッズ未取得</small>'}</span></button>`).join(''):'<p class="section-desc">この日に有効な出走データがありません。非開催・未公開・通信エラーの場合があります。公開後に自動更新します。</p>';
- target.querySelectorAll('[data-national-v]').forEach(b=>b.onclick=()=>{venue=Number(b.dataset.nationalV);race=Number(b.dataset.nationalN);setView('home');renderAll()})
+ target.innerHTML=all.length?all.slice(0,12).map(x=>{
+  const bestPrice=x.topOdds?`${Number(x.topOdds.odds).toFixed(1)}倍`:'オッズ未取得';
+  const alt=x.alternative;
+  return `<button type="button" class="national-card" data-national-v="${x.v}" data-national-n="${x.n}">
+    <span><b>${escapeHTML(venueName(x.v))} ${x.n}R</b>
+      <small>中心艇 ${x.leader+1}号艇 · 参考指数 ${x.score.toFixed(1)} / 100（確率ではありません）</small>
+      <small class="candidate-top">モデル第1候補：${x.top}</small>
+      ${alt?`<small class="candidate-alt">オッズ条件に合う別候補（モデル第${alt.rank}位）：${alt.combo}</small>`:''}
+    </span>
+    <span class="subinfo"><small class="candidate-foot">第1候補の倍率</small>
+      <span class="candidate-price">${bestPrice}</span>
+      ${alt?`<small class="candidate-alt">別候補：<span class="candidate-price">${alt.odds.toFixed(1)}倍</span><br>${alt.source==='auto'?'自動取得':'手入力'}</small>`:'<small class="candidate-foot">高オッズ別候補なし</small>'}
+    </span></button>`;
+ }).join(''):'<p class="section-desc">この日に有効な出走データがありません。非開催・未公開・通信エラーの場合があります。公開後に自動更新します。</p>';
+ target.querySelectorAll('[data-national-v]').forEach(b=>b.onclick=()=>{venue=Number(b.dataset.nationalV);race=Number(b.dataset.nationalN);setView('home');renderAll()});
 }
 function windDirection(d){if(!Number.isFinite(d))return'--';const dirs=['北','北東','東','南東','南','南西','西','北西'];return dirs[Math.round(d/45)%8]}
 function wmoIcon(code){return code===0?'☀':code<=3?'⛅':code>=95?'⛈':code>=71&&code<=86?'❄':'☂'}
 function wmoLabel(code){return code===0?'晴れ':code<=3?'晴れ・曇り':code>=95?'雷雨':code>=71&&code<=86?'雪':code>=51?'雨':'曇り・霧'}
-function weatherSet(data){const w=data,valid=w&&Number.isFinite(w.temp);$('weatherSummary').textContent=valid?wmoLabel(w.code):'予報データなし';$('weatherTemp').textContent=valid?`${w.temp.toFixed(1)}℃`:'--';$('weatherWind').textContent=valid?`${w.wind.toFixed(1)}m/s`:'--';$('weatherDir').textContent=valid?windDirection(w.dir):'--';$('weatherRain').textContent=valid?`${w.rain.toFixed(1)}mm`:'--';$('weatherIcon').textContent=valid?wmoIcon(w.code):'☁';$('weatherWhen').textContent=valid?w.time+'（大阪・住之江周辺）':'選択日の予報が提供範囲外か取得不可';$('weatherNotice').textContent='風速・風向は陸上付近の気象モデル値で、水面の公式実測値ではありません。順位計算には利用していません。'}
-async function loadWeather(force=false){const target=date,seq=++weatherSeq;weatherSet(null);$('weatherSummary').textContent='予報を確認中…';if(!navigator.onLine){$('weatherSummary').textContent='オフラインのため取得できません';return}
-if(!force&&weatherCache.has(target)&&Date.now()-weatherCache.get(target).ts<600000){if(seq===weatherSeq)weatherSet(weatherCache.get(target).data);return}
-const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),9000);
-try{
- const url='https://api.open-meteo.com/v1/forecast?latitude=34.611668&longitude=135.471274&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,precipitation,weather_code&wind_speed_unit=ms&timezone=Asia%2FTokyo&forecast_days=16';
- const res=await fetch(url,{signal:controller.signal,cache:'no-store'});if(!res.ok)throw new Error('weather status '+res.status);const json=await res.json();const series=json.hourly||{};
- const times=series.time||[];let pos=times.indexOf(target+'T17:00');if(pos<0){if(seq===weatherSeq){weatherSet(null);$('weatherSummary').textContent='この日の予報は未提供';}return}
- const get=(k)=>{const v=series[k]?.[pos];return v===null||v===undefined?NaN:Number(v)};const o={temp:get('temperature_2m'),wind:get('wind_speed_10m'),dir:get('wind_direction_10m'),rain:get('precipitation'),code:get('weather_code'),time:`${labelDate(target)} 17:00の予報`};if(Object.values(o).slice(0,5).some(x=>!Number.isFinite(x)))throw new Error('bad weather values');weatherCache.set(target,{data:o,ts:Date.now()});if(seq===weatherSeq)weatherSet(o);
-}catch(e){if(seq===weatherSeq){weatherSet(null);$('weatherSummary').textContent='気象データを取得できません'}}finally{clearTimeout(timeout)}
+
+function weatherTargetHour(){
+ const c=dataFor()?.closedAt||'';
+ const m=/^\d{4}-\d{2}-\d{2}[ T](\d{2}):(\d{2})/.exec(c);
+ if(m){const h=Number(m[1]),min=Number(m[2]);if(h>=0&&h<24&&min>=0&&min<60)return{hour:Math.min(23,h+(min>=30?1:0)),fromClose:true}}
+ return {hour:15,fromClose:false};
+}
+function weatherSet(data){
+ const w=data,valid=w&&Number.isFinite(w.temp),name=venueName(venue);
+ $('weatherTitle').textContent=`${name}周辺の気象予報`;
+ $('weatherSummary').textContent=valid?wmoLabel(w.code):'予報データなし';
+ $('weatherTemp').textContent=valid?`${w.temp.toFixed(1)}℃`:'--';
+ $('weatherWind').textContent=valid?`${w.wind.toFixed(1)}m/s`:'--';
+ $('weatherDir').textContent=valid?windDirection(w.dir):'--';
+ $('weatherRain').textContent=valid?`${w.rain.toFixed(1)}mm`:'--';
+ $('weatherIcon').textContent=valid?wmoIcon(w.code):'☁';
+ $('weatherWhen').textContent=valid?`${w.time} ／ ${name}付近（概算地点）`:`${name}付近：選択日の予報が提供範囲外または取得不可`;
+ $('weatherNotice').textContent='会場付近の概算地点の気象予報であり、競走水面の実測値ではありません。風向は地理上の方角です（レースへの追い風・向かい風を示すものではありません）。予想順位の自動補正には使っていません。';
+}
+async function loadWeather(force=false){
+ const target=date,selectedVenue=venue,h=weatherTargetHour(),hour=h.hour;
+ const key=`${target}_${selectedVenue}_${hour}`,seq=++weatherSeq;
+ weatherSet(null);$('weatherSummary').textContent='予報を確認中…';
+ if(!navigator.onLine){$('weatherSummary').textContent='オフラインのため取得できません';return}
+ if(!force&&weatherCache.has(key)&&Date.now()-weatherCache.get(key).ts<600000){
+  if(seq===weatherSeq)weatherSet(weatherCache.get(key).data);return;
+ }
+ const point=VENUE_WEATHER_COORDS[selectedVenue];
+ if(!point){$('weatherSummary').textContent='参照地点が設定されていません';return}
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),9000);
+ try{
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${point[0]}&longitude=${point[1]}&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,precipitation,weather_code&wind_speed_unit=ms&timezone=Asia%2FTokyo&forecast_days=16`;
+  const res=await fetch(url,{signal:controller.signal,cache:'no-store'});
+  if(!res.ok)throw new Error('weather status '+res.status);
+  const json=await res.json(),series=json.hourly||{},times=series.time||[];
+  const chosen=`${target}T${String(hour).padStart(2,'0')}:00`,pos=times.indexOf(chosen);
+  if(pos<0){if(seq===weatherSeq){weatherSet(null);$('weatherSummary').textContent='この日時の予報は未提供';}return}
+  const get=k=>{const v=series[k]?.[pos];return v===null||v===undefined?NaN:Number(v)};
+  const o={temp:get('temperature_2m'),wind:get('wind_speed_10m'),dir:get('wind_direction_10m'),rain:get('precipitation'),code:get('weather_code'),time:`${labelDate(target)} ${String(hour).padStart(2,'0')}:00の予報（${h.fromClose?'締切時刻付近':'参考時刻'}）`};
+  if(Object.values(o).slice(0,5).some(x=>!Number.isFinite(x)))throw new Error('bad weather values');
+  weatherCache.set(key,{data:o,ts:Date.now()});
+  if(seq===weatherSeq)weatherSet(o);
+ }catch(e){if(seq===weatherSeq){weatherSet(null);$('weatherSummary').textContent='気象データを取得できません'}}
+ finally{clearTimeout(timeout)}
 }
 function exportData(){const blob=new Blob([JSON.stringify({app:'suminoe-race-lab',exportedAt:new Date().toISOString(),data:state,odds:storedOdds},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`suminoe-backup-${inJST()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function isSafeImport(obj){if(!obj||obj.app!=='suminoe-race-lab'||obj.data?.version!==1||typeof obj.data?.races!=='object'||!obj.data.races||typeof obj.data?.results!=='object'||!obj.data.results)return false;
