@@ -31,6 +31,22 @@
 .optional-entry{margin:12px 0 14px;padding:10px 12px;border:1px solid var(--border);border-radius:10px}.optional-entry summary{cursor:pointer;color:var(--muted);font-size:12px;font-weight:700}.optional-entry[open] summary{margin-bottom:10px}
 .national-card .candidate-top{display:block;color:#c7edfa;font-weight:800;margin-top:7px}.national-card .candidate-alt{display:block;color:#ffdda7;font-weight:750;margin-top:8px}.national-card .candidate-price{font-weight:850;white-space:nowrap;color:#74ebd5}.national-card .candidate-foot{color:#9cb1c6}.odds-best{border-color:#5b908b;background:#153334}.odds-best .pick-number{font-size:18px}
 @media(max-width:600px){.national-card{grid-template-columns:1fr;gap:8px}.national-card .subinfo{border-top:1px solid #35516a;padding-top:7px;display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap}.national-card .subinfo .candidate-alt{margin-top:0}.national-card .candidate-foot{margin-top:0}}
+
+
+/* Daily accuracy: pre-race frozen picks only, not probabilities. */
+.daily-summary{border-color:#326f77}
+.daily-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}
+.daily-metric{background:#142c3f;border:1px solid #35576b;border-radius:13px;padding:13px 10px;min-width:0}
+.daily-metric small{display:block;font-size:11px;color:#aac5d5;line-height:1.4}
+.daily-metric b{display:block;color:#71e7d2;font-weight:950;letter-spacing:-1px;font-size:clamp(19px,4.8vw,30px);margin:7px 0}
+.daily-progress{border-top:1px solid #2b4a5e;padding-top:12px;color:#cbdde7;font-size:12px;line-height:1.8}
+.daily-history{display:grid;gap:9px;margin-top:14px}
+.daily-entry{display:grid;gap:5px;border:1px solid #36536b;background:#14283d;padding:12px;border-radius:11px;font-size:12px}
+.daily-entry-head{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.daily-entry-head b{font-size:14px}.daily-entry .muted{color:#a7bed0}
+.daily-entry .hit{color:#83ead4;font-weight:850}.daily-entry .miss{color:#f8c8ac;font-weight:800}
+.daily-cash{border-top:1px solid #335067;margin-top:16px;padding-top:14px}.daily-cash h3{font-size:15px;margin:0 0 8px}.daily-cash strong{color:#dff2fa}.cash-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:13px 0 8px}.cash-item{border:1px solid #3a586c;border-radius:12px;background:#0e2637;padding:12px;min-width:0}.cash-item small{display:block;font-size:11px;color:#b6ccdc}.cash-item b{display:block;font-size:clamp(18px,5vw,27px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;margin-top:7px;color:#e9f7fc}.cash-item.cash-net b{color:#87e9d6}.cash-item.cash-net b.negative{color:#ffbcae}.cash-status{font-size:11px;color:#b5cfe0;line-height:1.8;margin:10px 0}.cash-alternatives{border:1px solid #35536b;border-radius:11px;padding:11px;margin-top:12px}.cash-alternatives summary{cursor:pointer;font-size:12px;font-weight:700;color:#90ecda}.cash-scenarios{display:grid;gap:8px;margin-top:10px}.cash-scenario{border-top:1px solid #38526a;padding:10px 0;font-size:12px;line-height:1.8}.cash-scenario b{color:#ecf9fc;font-weight:850}.cash-scenario span{color:#a8c1d2}.cash-scenario .negative{color:#ffbcae}
+@media(max-width:365px){.daily-grid{gap:5px}.daily-metric{padding:10px 6px}.daily-metric small{font-size:10px}}
 </style>
 <title>BOAT RACE LAB | 全国24場の参考分析</title>
 </head>
@@ -47,6 +63,31 @@
   <div class="stat"><div class="stat-title">対象レース</div><div class="stat-value" id="currentRace">12<span>R</span></div></div>
   <div class="stat"><div class="stat-title">結果取得（非公式）</div><div class="stat-value" id="resultCount">0<span>件</span></div></div>
 </div>
+<section class="section daily-summary" aria-label="日別的中率">
+  <div class="section-heading"><h2>1日の的中率 <span class="auto-small">事前予想のみ</span></h2><span class="micro" id="dailyDate">--</span></div>
+  <div class="daily-grid">
+    <div class="daily-metric"><small>第1候補・1点</small><b id="dailyTop1">--</b><small id="dailyTop1Count">0 / 0 レース</small></div>
+    <div class="daily-metric"><small>上位3点</small><b id="dailyTop3">--</b><small id="dailyTop3Count">0 / 0 レース</small></div>
+    <div class="daily-metric"><small>上位5点</small><b id="dailyTop5">--</b><small id="dailyTop5Count">0 / 0 レース</small></div>
+  </div>
+  <div class="daily-cash" aria-label="100円仮想収支">
+    <h3>1レース100円なら、いくら？ <span class="auto-small">仮想収支</span></h3>
+    <p class="section-desc">第1候補の3連単を<strong>1レースにつき1点だけ100円</strong>買った場合。実際の確定3連単払戻（100円当たり）で計算します。</p>
+    <div class="cash-grid">
+      <div class="cash-item"><small>投資額</small><b id="cashStake">--</b></div>
+      <div class="cash-item"><small>払戻額</small><b id="cashReturn">--</b></div>
+      <div class="cash-item cash-net"><small>収支</small><b id="cashNet">--</b></div>
+      <div class="cash-item"><small>回収率</small><b id="cashRoi">--</b></div>
+    </div>
+    <p class="cash-status" id="cashStatus" role="status">配当を確認中…</p>
+    <details class="cash-alternatives"><summary>上位3点・5点を各100円買った場合も見る</summary>
+      <p class="section-desc">こちらは<strong>1レース合計100円ではありません</strong>。上位3点は300円／レース、上位5点は500円／レースの別シナリオです。</p>
+      <div id="cashScenarios" class="cash-scenarios"></div>
+    </details>
+  </div>
+  <p id="dailyProgress" class="daily-progress" role="status">事前予想を確認中…</p>
+  <p class="section-desc">全国24場の3連単。締切5分以上前に自動保存した予想だけを照合します。収支は<strong>非公式APIの払戻金額が確認できたレースのみ</strong>計算し、配当未取得・返還・不成立・未記録のレースは除外します。確定払戻額が表示されない間は収支も確定しません。実際の購入履歴ではありません。</p>
+</section>
 <section class="section selection"><div class="section-heading"><h2>レースを選ぶ</h2><span class="micro" id="eventLabel">全国24場</span></div>
  <div class="venue-picker"><label for="venueSelect">レース場（全国24場）</label><select id="venueSelect" aria-label="レース場を選択"></select></div>
  <div class="date-control"><label for="dateInput">開催日</label><input id="dateInput" type="date"><button class="small-btn" id="todayBtn" type="button">今日</button></div>
@@ -97,22 +138,28 @@
   <div class="editor-buttons"><button id="saveRace" type="button" class="primary-btn">保存して分析する</button><button id="clearRace" type="button" class="outline-btn">このレースの入力を消す</button></div><p id="editorFeedback" role="status" class="feedback"></p>
   <div class="tip">数値は入力値をそのまま保存します。非公式データは自動取得しますが、手入力を優先して保持します。</div>
 </div></section>
-<section id="view-results" hidden><div class="section"><div class="section-heading"><h2>予想と実際の結果</h2><span class="micro">端末内だけで記録</span></div>
- <p class="auto-status" id="autoResultStatus" role="status">確定結果：確認中…</p><div class="results-metrics"><div><span>記録レース数</span><b id="resultsTotal">0</b></div><div><span>第1候補一致</span><b id="resultsHits">0</b></div><div><span>一致率（参考）</span><b id="resultsRate">--</b></div></div><p class="section-desc">上の確定結果は非公式データから自動表示します。下の手動記録は従来の履歴機能（任意）です。レース終了後に取得した情報で後付けした予想を「事前的中」とは数えません。</p>
+<section id="view-results" hidden><div class="section"><div class="section-heading"><h2>日別的中率の内訳</h2><span class="micro" id="dailyHistoryDate">--</span></div>
+<p class="section-desc">上の開催日で集計します。予想はレース締切前の保存時点で固定され、未保存の過去レースを後から的中扱いにはしません。</p>
+<div id="dailyHistory" class="daily-history"><p class="section-desc">まだ事前予想の保存記録がありません。</p></div>
+</div><div class="section"><div class="section-heading"><h2>予想と実際の結果</h2><span class="micro">端末内だけで記録</span></div>
+ <p class="auto-status" id="autoResultStatus" role="status">確定結果：確認中…</p><div class="results-metrics"><div><span>記録レース数</span><b id="resultsTotal">0</b></div><div><span>第1候補一致</span><b id="resultsHits">0</b></div><div><span>手動記録の一致率・検証外</span><b id="resultsRate">--</b></div></div><p class="section-desc">この枠は以前からある「手入力した結果の照合履歴」です。入力時点が締切前か保証できないため、上の「1日の的中率」には加算しません。自動取得結果は上部の表示で確認してください。</p>
  <div class="result-entry"><label for="resultInput">選択中のレースの確定3連単</label><div class="inline-field"><input id="resultInput" placeholder="例：1-2-3" inputmode="numeric" autocomplete="off"><button type="button" class="primary-btn" id="saveResult">結果を記録</button></div><p class="feedback" role="status" id="resultFeedback"></p></div><div class="sub-heading"><b>記録履歴</b></div><div id="resultHistory" class="history"></div>
 </div></section>
-<div class="section section-final"><div class="section-heading"><h2>使い方・注意事項</h2></div><p class="disclaimer">これは非公式の全国24場向けデータ整理・参考分析ツールです。独自指数、全国注目レース、3連単候補は未検証モデルで、実際の的中確率・期待値・回収率を示しません。3連単オッズは締切約5分前の集計中スナップショットを自動取得します（配信前・取得不可・未開催のときは未取得）。結果も非公式APIから自動表示します。いずれもリアルタイム値ではなく、遅延・欠落・誤りがあり得ます。締切時刻・欠場・オッズは必ず公式発表で確認してください。舟券購入は20歳以上に限られます。</p><div class="utility-row"><button id="exportBtn" class="outline-btn" type="button">入力データを書き出す</button><button id="importBtn" class="outline-btn" type="button">バックアップを読み込む</button><input id="importFile" type="file" accept="application/json,.json" hidden></div></div>
+<div class="section section-final"><div class="section-heading"><h2>使い方・注意事項</h2></div><p class="disclaimer">これは非公式の全国24場向けデータ整理・参考分析ツールです。独自指数、全国注目レース、3連単候補は未検証モデルで、実際の的中確率・期待値・回収率を示しません。3連単オッズは締切約5分前の集計中スナップショットを自動取得します（配信前・取得不可・未開催のときは未取得）。結果も非公式APIから自動表示します。日別的中率と100円仮想収支は端末内で締切前に自動保存した買い目だけを集計し、後追いで作った予想を含めません。100円仮想収支には確定3連単の払戻情報を使い、非公式データの払戻未取得や返還等のレースは計算対象外です。アプリを閉じている間や端末間では自動記録できません。いずれもリアルタイム値ではなく、遅延・欠落・誤りがあり得ます。締切時刻・欠場・オッズは必ず公式発表で確認してください。舟券購入は20歳以上に限られます。</p><div class="utility-row"><button id="exportBtn" class="outline-btn" type="button">入力データを書き出す</button><button id="importBtn" class="outline-btn" type="button">バックアップを読み込む</button><input id="importFile" type="file" accept="application/json,.json" hidden></div></div>
 </main>
 <nav class="bottom-nav" aria-label="画面切り替え"><button data-view="home" class="nav-item active" type="button"><span>⌂</span>予想</button><button data-view="editor" class="nav-item" type="button"><span>▤</span>データ入力</button><button data-view="results" class="nav-item" type="button"><span>◷</span>結果</button></nav>
 <dialog id="installDialog" class="install-dialog"><div class="dialog-head"><h2>ホーム画面に追加</h2><button id="closeInstall" type="button" aria-label="閉じる">×</button></div><p><strong>iPhone（Safari）</strong>：下部の共有ボタン →「ホーム画面に追加」→「追加」</p><p><strong>PC / Android</strong>：ブラウザの「インストール」や「ホーム画面に追加」を選択</p><p class="disclaimer">正式なホーム画面アプリとしての利用には、HTTPSでWebサイトを公開する必要があります。</p></dialog>
 </div>
 <script>
-/* BOATRACE RACE LAB v1.3 — opt-in-to-use third-party public APIs; local-first; no tracking */
+/* BOATRACE RACE LAB v1.6 — frozen daily hits and 100-yen payout simulation, local-first */
 'use strict';
 const $=id=>document.getElementById(id);
 const COLORS=['#edf4f9','#101820','#ea474c','#2666df','#f8dc43','#51cb72'];
 const INK=['#112033','#f6faff','#fff','#fff','#152235','#132f24'];
 const STORE='suminoe-race-lab-data-v1';
+const DAILY_STORE='boatrace-race-lab-daily-picks-v1';
+const DAILY_FREEZE_BUFFER_MS=5*60*1000; // minimum lead time before published closing time
+const DAILY_KEEP_DAYS=21;
 // Fetched data is stored separately, so user edits / recorded results are never overwritten.
 const AUTO_STORE='boatrace-race-lab-cache-v2';
 const ODDS_STORE='boatrace-race-lab-odds-v1';
@@ -171,7 +218,12 @@ function mapApiDay(payload,d){
    const preview=src.preview||{};const result=src.result||{};
    const order=Object.entries(result.racers||{}).filter(([,p])=>Number.isInteger(p?.place_number)&&p.place_number>=1&&p.place_number<=3).sort((a,b)=>a[1].place_number-b[1].place_number);
    const triple=order.length>=3&&order.slice(0,3).every(([,p],i)=>p.place_number===i+1)?order.slice(0,3).map(([k])=>k).join('-'):'';
-   races[n]={players,source:'Boatrace Open API（非公式・取得データ）',updated:new Date().toISOString(),title:typeof src.title==='string'?src.title.slice(0,90):'',subtitle:typeof src.subtitle==='string'?src.subtitle.slice(0,90):'',preview:{wind:numericOrBlank(preview.wind_speed,0,50),wave:numericOrBlank(preview.wave_height,0,500),temperature:numericOrBlank(preview.air_temperature,-20,60),weather:typeof preview.weather_number_source==='string'?preview.weather_number_source.slice(0,30):'',hasPreview:!!src.preview&&Object.values(src.preview.racers||{}).some(x=>x&&x.exhibition_time!=null)},triple,closedAt:typeof src.closed_at==='string'?src.closed_at:''};
+   // Officially displayed 3連単 payout amounts are in JPY per 100 yen, unlike odds snapshots.
+   const rawPayouts=Array.isArray(result.payouts?.trifecta)?result.payouts.trifecta:null;
+   const trifectaPayouts=rawPayouts?rawPayouts.filter(p=>p&&validCombo(p.combination)&&Number.isSafeInteger(p.amount)&&p.amount>0&&p.amount<=100000000).map(p=>({combo:p.combination,amount:p.amount})):[];
+   const refundRisk=(Array.isArray(result.refunds)&&result.refunds.length>0)||String(result.remarks||'').includes('返還');
+   const payoutReady=!!rawPayouts?.length&&trifectaPayouts.length===rawPayouts.length&&!refundRisk;
+   races[n]={players,source:'Boatrace Open API（非公式・取得データ）',updated:new Date().toISOString(),title:typeof src.title==='string'?src.title.slice(0,90):'',subtitle:typeof src.subtitle==='string'?src.subtitle.slice(0,90):'',preview:{wind:numericOrBlank(preview.wind_speed,0,50),wave:numericOrBlank(preview.wave_height,0,500),temperature:numericOrBlank(preview.air_temperature,-20,60),weather:typeof preview.weather_number_source==='string'?preview.weather_number_source.slice(0,30):'',hasPreview:!!src.preview&&Object.values(src.preview.racers||{}).some(x=>x&&x.exhibition_time!=null)},triple,trifectaPayouts,payoutReady,refundRisk,closedAt:typeof src.closed_at==='string'?src.closed_at:''};
   }
   venues[v]=races;
  }
@@ -255,9 +307,9 @@ function showAutoPanel(){
  detail.textContent=`非公式API取得日時 ${stamp} ／ ${manual?'手入力を優先・保護':api?'自動データを表示':'このレースはデータ未取得'}。画面表示中は約5分間隔で更新。3連単オッズは別データソースから取得。`;
  const parts=[];if(api?.title)parts.push('開催：'+api.title+(api.subtitle?' ／ '+api.subtitle:''));if(api?.closedAt)parts.push('締切：'+api.closedAt);
  if(api?.preview?.hasPreview){const p=api.preview;parts.push('直前情報：風速 '+(p.wind===''?'未取得':p.wind+'m/s')+' ／ 波高 '+(p.wave===''?'未取得':p.wave+'cm')+' ／ 気温 '+(p.temperature===''?'未取得':p.temperature+'℃')+(p.weather?' ／ '+p.weather:''))}
- if(api?.triple)parts.push('確定結果（非公式データ）：'+api.triple+' ※予想成績には自動加算しません');preview.hidden=!parts.length;preview.textContent=parts.join(' ｜ ');
+ if(api?.triple)parts.push('確定結果（非公式データ）：'+api.triple+' ※締切前に保存した予想のみ日別成績に照合します');preview.hidden=!parts.length;preview.textContent=parts.join(' ｜ ');
 }
-function repaintAfterFetch(){updateMeta();renderRaceGrid();renderHome();renderNation();renderOdds();if(activeView==='editor')renderEditor();if(activeView==='results')renderResults();showAutoPanel()}
+function repaintAfterFetch(){syncDailyPicks(date);renderDaily();updateMeta();renderRaceGrid();renderHome();renderNation();renderOdds();if(activeView==='editor')renderEditor();if(activeView==='results')renderResults();showAutoPanel()}
 async function fetchAutoData(force=false){
  const target=date, now=Date.now();
  if(autoRunning[target]||(!force&&autoAttempts[target]&&now-autoAttempts[target]<AUTO_INTERVAL_MS)){showAutoPanel();return}
@@ -285,6 +337,151 @@ const SEED={
   players:[[3941,'池田 浩二',7.97,54.3,.12],[4444,'桐生 順平',7.2,44.2,.13],[4719,'上條 暢嵩',7.28,45.6,.14],[4851,'関 浩哉',7.49,50.4,.13],[4350,'篠崎 元志',7.56,55.3,.13],[4686,'丸野 一樹',6.76,42,.14]].map(a=>({id:String(a[0]),name:a[1],win:a[2],two:a[3],st:a[4],motor:'',exhibit:''}))}
 };
 const EMPTY=()=>({id:'',name:'',win:'',two:'',st:'',motor:'',exhibit:''});
+// Frozen predictions are separate from all user edits and must never be calculated after the race.
+function loadDailyPicks(){
+ try{const x=JSON.parse(localStorage.getItem(DAILY_STORE));if(x?.version===1&&x.records&&typeof x.records==='object'&&!Array.isArray(x.records))return x}catch(e){}
+ return {version:1,records:{}};
+}
+let dailyPicks=loadDailyPicks(),dailySaveError=false;
+function persistDailyPicks(){
+ // Bounded storage for older records; keep existing result verification for recent dates.
+ const dates=[...new Set(Object.keys(dailyPicks.records).map(k=>k.slice(0,10)))].sort().reverse();
+ const keep=new Set(dates.slice(0,DAILY_KEEP_DAYS));
+ for(const k of Object.keys(dailyPicks.records))if(!keep.has(k.slice(0,10)))delete dailyPicks.records[k];
+ try{localStorage.setItem(DAILY_STORE,JSON.stringify(dailyPicks));dailySaveError=false;return true}catch(e){dailySaveError=true;return false}
+}
+function dailySnapshotKey(day,v,n){return `${day}_${v}_${n}`}
+function publishedCloseMs(src){
+ const t=src?.closedAt;
+ if(typeof t!=='string'||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}/.test(t))return NaN;
+ return Date.parse(t.replace(' ','T')+'+09:00');
+}
+function syncDailyPicks(day){
+ // Work only with the nonofficial API cache; user-edited and seeded records cannot inflate the rate.
+ const records=autoCache.days[day]?.venues||{};
+ let dirty=false,created=0,settled=0,voided=0;
+ const now=Date.now(),today=inJST();
+ for(const [venueNo,races] of Object.entries(records))for(const [raceNo,src] of Object.entries(races||{})){
+  const v=Number(venueNo),n=Number(raceNo),key=dailySnapshotKey(day,v,n);
+  if(!Number.isInteger(v)||v<1||v>24||!Number.isInteger(n)||n<1||n>12)continue;
+  const prior=dailyPicks.records[key];
+  if(prior){
+   // Prediction tickets are immutable; only attach newly available actual outcome and payout.
+   if(prior.status==='void')continue;
+   const ids=src?.players?.map(p=>String(p.id||''))||[];
+   const officialCombo=src?.triple||(src?.payoutReady?src.trifectaPayouts?.[0]?.combo:'');
+   if(prior.status!=='resolved'&&validCombo(officialCombo)){
+    if(ids.length===6&&prior.ids?.length===6&&prior.ids.every((id,i)=>id===ids[i])){
+     prior.actual=officialCombo;prior.status='resolved';prior.resolvedAt=new Date().toISOString();settled++;
+    }else{
+     prior.status='void';prior.reason='選手登録番号の変更';voided++;
+    }
+    dirty=true;
+   }
+   if(prior.status==='resolved'){
+    // Exclude refunds and invalid / unavailable payout lists from all cash totals.
+    // Keep previously verified payouts when the current API refresh is temporarily incomplete.
+    // Only replace them on new verified payout data, or invalidate on explicit refunds.
+    if(src?.refundRisk){
+     if(prior.trifectaPayouts){prior.trifectaPayouts=null;dirty=true}
+     if(!prior.refundRisk){prior.refundRisk=true;dirty=true}
+    }else if(src?.payoutReady){
+     const old=JSON.stringify(prior.trifectaPayouts||null),next=JSON.stringify(src.trifectaPayouts);
+     if(old!==next){prior.trifectaPayouts=src.trifectaPayouts;dirty=true}
+     if(prior.refundRisk){prior.refundRisk=false;dirty=true}
+    }
+   }
+   continue;
+  }
+  // Must be today's race, with verified entrants and at least 5 minutes until its published deadline.
+  // Never backfill historical dates or use a result already in the API.
+  if(day!==today||src?.triple||!src?.players||!complete(src.players))continue;
+  const close=publishedCloseMs(src);
+  if(!Number.isFinite(close)||close-now<DAILY_FREEZE_BUFFER_MS)continue;
+  const ids=src.players.map(p=>String(p.id||''));
+  if(ids.some(id=>!/^[0-9]{4}$/.test(id)))continue;
+  const model=rankModel(src.players);
+  if(!model||!Array.isArray(model.combos)||model.combos.length<5)continue;
+  dailyPicks.records[key]={day,venue:v,race:n,closedAt:src.closedAt,recordedAt:new Date().toISOString(),
+   ids,picks:model.combos.slice(0,5).map(c=>c.lanes.join('-')),status:'pending',modelVersion:'v1.5'};
+  dirty=true;created++;
+ }
+ if(dirty){
+  if(!persistDailyPicks()){
+   // An unsaved capture should not be presented as an auditable permanent record.
+   for(const [k,x] of Object.entries(dailyPicks.records))if(x.status==='pending'&&x.recordedAt&&created&&x.day===day&&Date.now()-Date.parse(x.recordedAt)<1000)delete dailyPicks.records[k];
+  }
+ }
+ return {created,settled,voided};
+}
+function dailyStats(day){
+ const all=Object.values(dailyPicks.records).filter(x=>x?.day===day);
+ const resolved=all.filter(x=>x.status==='resolved'&&validCombo(x.actual));
+ const pending=all.filter(x=>x.status==='pending');
+ const voided=all.filter(x=>x.status==='void');
+ const hits={1:0,3:0,5:0};
+ for(const x of resolved)for(const n of [1,3,5]){
+  const winners=Array.isArray(x.trifectaPayouts)&&x.trifectaPayouts.length?x.trifectaPayouts.map(p=>p.combo):[x.actual];
+  if(x.picks?.slice(0,n).some(p=>winners.includes(p)))hits[n]++;
+ }
+ return{all,resolved,pending,voided,hits};
+}
+function dailyCashStats(stat){
+ // All values use a fixed 100 yen stake on EACH chosen ticket, no reinvestment.
+ // Never use pre-race odds to infer post-race payout.
+ const eligible=stat.resolved.filter(x=>!x.refundRisk&&Array.isArray(x.trifectaPayouts)&&x.trifectaPayouts.length&&
+   x.trifectaPayouts.every(p=>validCombo(p.combo)&&Number.isSafeInteger(p.amount)&&p.amount>0));
+ const cases={};
+ for(const n of [1,3,5]){
+  let paid=0,hits=0;
+  for(const x of eligible){
+   const tickets=x.picks.slice(0,n),value=x.trifectaPayouts.reduce((a,p)=>a+(tickets.includes(p.combo)?p.amount:0),0);
+   paid+=value;if(value>0)hits++;
+  }
+  const stake=eligible.length*n*100;
+  cases[n]={stake,paid,net:paid-stake,roi:stake>0?paid/stake*100:null,hits};
+ }
+ return {eligible,excluded:stat.resolved.length-eligible.length,cases};
+}
+function moneyYen(value){return Number.isFinite(value)?Math.round(value).toLocaleString('ja-JP')+'円':'--'}
+function renderDailyCash(stat){
+ const cash=dailyCashStats(stat),primary=cash.cases[1],has=cash.eligible.length>0;
+ $('cashStake').textContent=has?moneyYen(primary.stake):'--';
+ $('cashReturn').textContent=has?moneyYen(primary.paid):'--';
+ $('cashNet').textContent=has?(primary.net>0?'+':'')+moneyYen(primary.net):'--';
+ $('cashNet').classList.toggle('negative',has&&primary.net<0);
+ $('cashRoi').textContent=has?primary.roi.toFixed(1)+'%':'--';
+ $('cashStatus').textContent=has?`払戻確認済み ${cash.eligible.length}レースのみの仮想収支（第1候補1点100円）。配当未取得・返還等で未計算 ${cash.excluded}レース、結果待ち ${stat.pending.length}レース。`:`払戻確認済み0レース。結果待ち ${stat.pending.length}レース、結果あり・配当未確認または返還等 ${cash.excluded}レース。未取得のレースを0円扱いにはしません。`;
+ $('cashScenarios').innerHTML=[3,5].map(n=>{
+  const x=cash.cases[n];return `<div class="cash-scenario"><b>上位${n}点（${n*100}円／レース）</b><div>投資 ${has?moneyYen(x.stake):'--'} ／ 払戻 ${has?moneyYen(x.paid):'--'}</div><div>収支 <b class="${has&&x.net<0?'negative':''}">${has?(x.net>0?'+':'')+moneyYen(x.net):'--'}</b> ／ 回収率 ${has?x.roi.toFixed(1)+'%':'--'}</div></div>`;
+ }).join('');
+}
+function renderDaily(){
+ const stat=dailyStats(date),count=stat.resolved.length;
+ renderDailyCash(stat);
+ $('dailyDate').textContent=`${date.replaceAll('-','/')} · 全国24場`;
+ $('dailyHistoryDate').textContent=date.replaceAll('-','/');
+ for(const n of [1,3,5]){
+  $('dailyTop'+n).textContent=count?`${(100*stat.hits[n]/count).toFixed(1)}%`:'--';
+  $('dailyTop'+n+'Count').textContent=`${stat.hits[n]} / ${count} レース`;
+ }
+ const msg=count?`確定結果と照合：${count}レース`:'結果照合：0レース（的中率は未確定）';
+ $('dailyProgress').textContent=`${msg} ／ 事前予想の結果待ち ${stat.pending.length}件 ／ 対象外 ${stat.voided.length}件 ／ 締切前に自動保存 ${stat.all.length}件${dailySaveError?' ／ 保存エラー：端末の空き容量・設定を確認':''}`;
+ const items=stat.all.slice().sort((a,b)=>a.venue-b.venue||a.race-b.race);
+ $('dailyHistory').innerHTML=items.length?items.map(x=>{
+  const isResolved=x.status==='resolved';const isVoid=x.status==='void';
+  const outcome=isResolved?`確定 ${escapeHTML(x.actual)}`:isVoid?'対象外（選手変更）':'結果待ち／未取得';
+  const top1=isResolved&&x.picks?.[0]===x.actual;
+  const top3=isResolved&&x.picks?.slice(0,3).includes(x.actual);
+  const top5=isResolved&&x.picks?.slice(0,5).includes(x.actual);
+  const verdict=isResolved?`<span class="${top1?'hit':'miss'}">1点 ${top1?'○':'×'}</span> · <span class="${top3?'hit':'miss'}">3点 ${top3?'○':'×'}</span> · <span class="${top5?'hit':'miss'}">5点 ${top5?'○':'×'}</span>`:'';
+  const confirmedPayout=isResolved&&!x.refundRisk&&Array.isArray(x.trifectaPayouts)&&x.trifectaPayouts.length;
+  const paid1=confirmedPayout?x.trifectaPayouts.reduce((a,p)=>a+(p.combo===x.picks?.[0]?p.amount:0),0):null;
+  const cashNote=isResolved?(confirmedPayout?`<span class="muted">仮想1点100円：払戻 ${moneyYen(paid1)} ／ 収支 ${paid1>100?'+':''}${moneyYen(paid1-100)}</span>`:'<span class="muted">払戻未取得・返還等：収支計算の対象外</span>'):'';
+  const stamp=Number.isFinite(Date.parse(x.recordedAt))?new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit'}).format(new Date(x.recordedAt)):'時刻不明';
+  return `<div class="daily-entry"><div class="daily-entry-head"><b>${escapeHTML(venueName(x.venue))} ${x.race}R</b><span class="muted">保存 ${stamp}</span></div><div>事前の第1候補 ${escapeHTML(x.picks?.[0]||'--')} ／ ${outcome}</div><div>${verdict||'<span class="muted">結果待ち・的中率の分母には含めません</span>'}</div>${cashNote?`<div>${cashNote}</div>`:''}</div>`;
+ }).join(''):'<p class="section-desc">この日に締切前に保存した予想はまだありません。アプリ表示中に出走表を取得すると、自動で保存します。過去の結果から予想を作り直すことはしません。</p>';
+}
 function inJST(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
 function initialDate(){return inJST()}
 function load(){try{const s=JSON.parse(localStorage.getItem(STORE));if(s&&s.version===1&&typeof s.races==='object'&&typeof s.results==='object')return s}catch(e){}return {version:1,races:{},results:{}}}
@@ -357,7 +554,7 @@ function clearRace(){if(!confirm(`${venueName(venue)} ${labelDate(date)} ${race}
 function renderResults(){const auto=cachedRace();$('autoResultStatus').textContent=auto?.triple?`【自動取得】${venueName(venue)} ${labelDate(date)} ${race}R：確定3連単 ${auto.triple}（非公式API。公式結果と照合してください）`:'確定3連単：未取得／開催前・結果未掲載の可能性があります。';const entries=Object.entries(state.results).sort((a,b)=>b[0].localeCompare(a[0]));let hits=entries.filter(([,v])=>v.tickets?.[0]===v.actual).length;$('resultsTotal').textContent=entries.length;$('resultsHits').textContent=hits;$('resultsRate').textContent=entries.length?`${(hits/entries.length*100).toFixed(1)}%`:'--';$('resultInput').value=resultsForCurrent()?.actual||'';
 $('resultHistory').innerHTML=entries.length?entries.map(([k,v])=>{const parsed=parseKey(k)||{d:'?',v:12,n:'?'};const {d,n,v:station}=parsed;let hit=v.tickets?.[0]===v.actual;return `<div class="history-item"><div><b>${escapeHTML(d)} · ${escapeHTML(venueName(station))} ${escapeHTML(n)}R</b><small>確定 ${escapeHTML(v.actual)}　/　第1候補 ${escapeHTML(v.tickets?.[0]||'--')}</small></div><span class="history-mark ${hit?'':'miss'}">${hit?'第1候補一致':'第1候補不一致'}</span></div>`}).join(''):'<p class="section-desc">まだ結果の記録はありません。</p>'}
 function saveResult(){const s=$('resultInput').value.trim().replace(/\s/g,'');const m=s.match(/^([1-6])-([1-6])-([1-6])$/);if(!m||new Set(m.slice(1)).size!==3){$('resultFeedback').textContent='⚠ 1-2-3 の形式で、異なる3艇を入力してください';return}const d=dataFor();if(!d||!complete(d.players)){$('resultFeedback').textContent='⚠ 先に6艇の出走データを登録してください';return}const model=rankModel(d.players);state.results[raceKey()]={actual:s,tickets:model.combos.slice(0,3).map(x=>x.lanes.join('-')),recorded:new Date().toISOString()};if(!persist()){$('resultFeedback').textContent='⚠ 保存に失敗しました';return}renderAll();$('resultFeedback').textContent='記録しました（公式結果との照合は利用者が実施）'}
-function renderAll(){updateMeta();renderRaceGrid();renderHome();renderNation();renderOdds();if(activeView==='editor')renderEditor();if(activeView==='results')renderResults();showAutoPanel();loadWeather();fetchAutoData();fetchAutoOdds()}
+function renderAll(){syncDailyPicks(date);renderDaily();updateMeta();renderRaceGrid();renderHome();renderNation();renderOdds();if(activeView==='editor')renderEditor();if(activeView==='results')renderResults();showAutoPanel();loadWeather();fetchAutoData();fetchAutoOdds()}
 
 function validCombo(x){const m=String(x).trim().match(/^([1-6])-([1-6])-([1-6])$/);return m&&new Set(m.slice(1)).size===3?m[0]:null}
 function addOddsEntry(){const combo=validCombo($('oddsCombo').value),mult=Number($('oddsMultiplier').value);if(!combo||!Number.isFinite(mult)||mult<1||mult>99999){$('oddsFeedback').textContent='⚠ 異なる3艇の組み合わせと、1〜99999の倍率を入力してください';return}
@@ -472,11 +669,19 @@ async function loadWeather(force=false){
  }catch(e){if(seq===weatherSeq){weatherSet(null);$('weatherSummary').textContent='気象データを取得できません'}}
  finally{clearTimeout(timeout)}
 }
-function exportData(){const blob=new Blob([JSON.stringify({app:'suminoe-race-lab',exportedAt:new Date().toISOString(),data:state,odds:storedOdds},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`suminoe-backup-${inJST()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function exportData(){const blob=new Blob([JSON.stringify({app:'suminoe-race-lab',exportedAt:new Date().toISOString(),data:state,odds:storedOdds,dailyPicks:dailyPicks},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`suminoe-backup-${inJST()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function isSafeImport(obj){if(!obj||obj.app!=='suminoe-race-lab'||obj.data?.version!==1||typeof obj.data?.races!=='object'||!obj.data.races||typeof obj.data?.results!=='object'||!obj.data.results)return false;
 if(Object.keys(obj.data.races).length>3000||Object.keys(obj.data.results).length>3000)return false;
 for(const [k,v] of Object.entries(obj.data.races)){if(!/^\d{4}-\d{2}-\d{2}_(?:(?:[1-9]|1[0-2])|(?:[1-9]|1\d|2[0-4])_(?:[1-9]|1[0-2]))$/.test(k)||!v||!Array.isArray(v.players)||v.players.length!==6||validatePlayers(v.players))return false}return true}
-function importData(file){if(!file||file.size>2000000){alert('2MB以下のバックアップファイルを選択してください');return}const reader=new FileReader();reader.onload=()=>{try{const o=JSON.parse(reader.result);if(!isSafeImport(o))throw Error('bad format');if(!confirm('現在の入力データをバックアップの内容で上書きしますか？'))return;state=o.data;if(!persist())throw Error('save failed');if(o.odds&&typeof o.odds==='object'&&!Array.isArray(o.odds)){storedOdds=o.odds;saveOdds()}renderAll();alert('バックアップを読み込みました')}catch(e){alert('バックアップを読み込めません。ファイル形式を確認してください')}};reader.readAsText(file,'utf-8')}
+function importData(file){if(!file||file.size>2000000){alert('2MB以下のバックアップファイルを選択してください');return}const reader=new FileReader();reader.onload=()=>{try{const o=JSON.parse(reader.result);if(!isSafeImport(o))throw Error('bad format');if(!confirm('現在の入力データをバックアップの内容で上書きしますか？'))return;state=o.data;if(!persist())throw Error('save failed');if(o.odds&&typeof o.odds==='object'&&!Array.isArray(o.odds)){storedOdds=o.odds;saveOdds()}
+if(o.dailyPicks?.version===1&&o.dailyPicks.records&&typeof o.dailyPicks.records==='object'&&!Array.isArray(o.dailyPicks.records)){
+ const rows=Object.entries(o.dailyPicks.records);
+ if(rows.length<=10000&&rows.every(([k,x])=>/^\d{4}-\d{2}-\d{2}_(?:[1-9]|1\d|2[0-4])_(?:[1-9]|1[0-2])$/.test(k)&&
+ x&&x.day===k.slice(0,10)&&Array.isArray(x.picks)&&x.picks.length===5&&x.picks.every(validCombo)&&Array.isArray(x.ids)&&x.ids.length===6&&
+ ['pending','resolved','void'].includes(x.status)&&(!x.actual||validCombo(x.actual)))){
+  dailyPicks=o.dailyPicks;persistDailyPicks();
+ }
+}renderAll();alert('バックアップを読み込みました')}catch(e){alert('バックアップを読み込めません。ファイル形式を確認してください')}};reader.readAsText(file,'utf-8')}
 function setup(){if('serviceWorker'in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 $('venueSelect').innerHTML=VENUES.map((name,i)=>`<option value="${i+1}">${String(i+1).padStart(2,'0')} ${escapeHTML(name)}</option>`).join('');$('venueSelect').value=String(venue);$('venueSelect').addEventListener('change',e=>{venue=Number(e.target.value);renderAll()});
 $('dateInput').addEventListener('change',e=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(e.target.value))return;date=e.target.value;renderAll()});$('todayBtn').onclick=()=>{date=inJST();renderAll()};
